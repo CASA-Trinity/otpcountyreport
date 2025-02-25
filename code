@@ -1,0 +1,39 @@
+import pandas as pd
+#in DB Regulatory Reporting hidden page 3
+# Load the data
+file_path = 'C:/Users/acalhoun/Desktop/data.csv'  # Replace with the path to your CSV file
+data = pd.read_csv(file_path)
+
+# Convert Start Date and End Date to datetime format
+data['Start Date'] = pd.to_datetime(data['Start Date'])
+data['End Date'] = pd.to_datetime(data['End Date'])
+
+# Define the date range for the year 2025
+date_range_2025 = pd.date_range(start='2025-01-01', end='2025-12-31', freq='M')
+
+# Initialize a list to hold the active client counts per month for 2025
+active_clients_2025 = []
+
+# Iterate through each month in 2025 and count active clients using categories
+for date in date_range_2025:
+    # Filter data to include only active clients for the current month
+    month_data = data[(data['Start Date'] <= date) & (data['End Date'] >= date)]
+    
+    # Group by category and count active clients
+    month_categories = month_data.groupby('Enrollment Category').size()
+    
+    # Append results to the list
+    for category, count in month_categories.items():
+        active_clients_2025.append({
+            'Month': date.strftime('%Y-%m'), 
+            'Category': category, 
+            'Active Clients': count
+        })
+
+# Convert the results to a DataFrame
+active_clients_2025_df = pd.DataFrame(active_clients_2025)
+
+# Save to a CSV file or print
+output_path_2025 = 'C:/Users/acalhoun/Desktop/active_clients_2025.csv'
+active_clients_2025_df.to_csv(output_path_2025, index=False)
+print(f"Data has been saved to {output_path_2025}")
